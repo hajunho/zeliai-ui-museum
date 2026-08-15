@@ -6,7 +6,8 @@
 <title>Gen 1 — 포털 시대 (2025) · ZeliAI UI Museum</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
-  body{ font-family:'GmarketSans','Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif; background:#fff; color:#222; }
+  body{ font-family:'GmarketSans','Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif; background:#fff; color:#222; animation:pagein .5s ease; }
+  @keyframes pagein{ from{ opacity:0; transform:translateY(10px);} to{ opacity:1; transform:none;} }
   a{ text-decoration:none; color:inherit; }
   .museum-bar{
     background:#111; color:#9ca3af; font-size:12px; padding:8px 16px; display:flex; gap:14px; align-items:center;
@@ -450,6 +451,18 @@
   document.querySelectorAll(".modal").forEach(function(m){
     m.addEventListener("click",function(e){ if(e.target===m) m.classList.remove("on"); });
   });
+  // ── ▶ 라이브 데모 (?autoplay=1): 검색어 자동 타이핑 → 결과 모달 ──
+  if(new URLSearchParams(location.search).get("autoplay")){
+    setTimeout(function(){
+      portalToast("▶ 라이브 데모 — 2025년의 AI통합검색을 재생합니다");
+      var q=document.getElementById("q"), text="오늘의 AI 뉴스 알려줘", i=0;
+      q.focus();
+      var t=setInterval(function(){
+        q.value=text.slice(0,++i);
+        if(i>=text.length){ clearInterval(t); setTimeout(runSearch,500); }
+      },90);
+    },900);
+  }
 </script>
 </body>
 </html>

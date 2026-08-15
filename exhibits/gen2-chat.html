@@ -11,7 +11,8 @@
     --g:#00FF88; --b:#00BFFF;
   }
   body.light{ --bg:#ffffff; --panel:#f3f4f6; --line:#e5e7eb; --tx:#111; --tx2:#555; --tx3:#999; }
-  body{ font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif; background:var(--bg); color:var(--tx); min-height:100vh; transition:background .25s,color .25s; }
+  body{ font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif; background:var(--bg); color:var(--tx); min-height:100vh; transition:background .25s,color .25s; animation:pagein .5s ease; }
+  @keyframes pagein{ from{ opacity:0; transform:translateY(10px);} to{ opacity:1; transform:none;} }
   .museum-bar{
     background:#111; color:#9ca3af; font-size:12px; padding:8px 16px; display:flex; gap:14px; align-items:center;
     border-bottom:1px solid #2A2A2A; position:sticky; top:0; z-index:99;
@@ -341,6 +342,13 @@
       applyModels();
       document.querySelectorAll('.chatitem').forEach(function(x){ x.classList.remove('on'); });
     }
+  }
+  // ── ▶ 라이브 데모 (?autoplay=1): 멀티브레인 계약서 검토 대화 자동 재생 ──
+  if(new URLSearchParams(location.search).get('autoplay')){
+    setTimeout(function(){
+      g2toast('▶ 라이브 데모 — 멀티브레인 교차검증 대화를 재생합니다');
+      document.querySelector('.chatitem[data-conv="contract"]').click();
+    },900);
   }
 </script>
 </body>

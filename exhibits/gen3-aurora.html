@@ -9,8 +9,9 @@
   body{
     font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
     background:#05070d; color:#e8f6f2; min-height:100vh; overflow-x:hidden;
-    display:flex; flex-direction:column;
+    display:flex; flex-direction:column; animation:pagein .5s ease;
   }
+  @keyframes pagein{ from{ opacity:0; transform:translateY(10px);} to{ opacity:1; transform:none;} }
   .museum-bar{
     background:#111; color:#9ca3af; font-size:12px; padding:8px 16px; display:flex; gap:14px; align-items:center;
     border-bottom:1px solid rgba(0,255,170,.14); position:sticky; top:0; z-index:99;
@@ -350,6 +351,13 @@
     });
   });
   document.getElementById('smodal').addEventListener('click',function(e){ if(e.target===this) this.classList.remove('on'); });
+  // ── ▶ 라이브 데모 (?autoplay=1): 멀티브레인 모드 전환 → 6패널 동시 시연 ──
+  if(new URLSearchParams(location.search).get('autoplay')){
+    setTimeout(function(){
+      document.querySelector('.mode[data-m="multi"]').click();
+      setTimeout(function(){ document.getElementById('send').click(); },800);
+    },900);
+  }
 </script>
 </body>
 </html>

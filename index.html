@@ -6,50 +6,163 @@
 <title>ZeliAI UI Museum — 젤리아이 UI 박물관</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
   body{
     font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
-    background:#05070d; color:#e8f6f2; min-height:100vh; overflow-x:hidden;
+    background:#04060b; color:#e8f6f2; min-height:100vh; overflow-x:hidden;
   }
+  ::selection{ background:rgba(0,255,136,.3); }
+
+  /* ── 배경: 오로라 + 파티클 캔버스 ── */
   .aurora{ position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none; }
-  .aurora i{ position:absolute; border-radius:50%; filter:blur(90px); opacity:.28; }
-  .aurora i:nth-child(1){ width:55vw; height:55vw; background:#00ff88; top:-22vw; left:-12vw; animation:d1 16s ease-in-out infinite alternate; }
-  .aurora i:nth-child(2){ width:48vw; height:48vw; background:#00bfff; top:18vh; right:-16vw; animation:d2 20s ease-in-out infinite alternate; }
-  @keyframes d1{ to{ transform:translate(9vw,7vh) scale(1.12);} }
-  @keyframes d2{ to{ transform:translate(-7vw,-6vh) scale(.92);} }
+  .aurora i{ position:absolute; border-radius:50%; filter:blur(100px); opacity:.3; }
+  .aurora i:nth-child(1){ width:60vw; height:60vw; background:#00ff88; top:-25vw; left:-14vw; animation:d1 18s ease-in-out infinite alternate; }
+  .aurora i:nth-child(2){ width:52vw; height:52vw; background:#00bfff; top:20vh; right:-18vw; animation:d2 22s ease-in-out infinite alternate; }
+  .aurora i:nth-child(3){ width:44vw; height:44vw; background:#7c3aed; bottom:-20vw; left:26vw; animation:d3 26s ease-in-out infinite alternate; opacity:.18; }
+  @keyframes d1{ to{ transform:translate(10vw,8vh) scale(1.15);} }
+  @keyframes d2{ to{ transform:translate(-8vw,-7vh) scale(.9);} }
+  @keyframes d3{ to{ transform:translate(-10vw,-9vh) scale(1.12);} }
+  #stars{ position:fixed; inset:0; z-index:1; pointer-events:none; }
 
-  .wrap{ position:relative; z-index:5; max-width:960px; margin:0 auto; padding:60px 24px 80px; }
-  h1{ font-size:clamp(30px,5vw,44px); font-weight:900; letter-spacing:-1.5px; text-align:center; line-height:1.3; }
-  h1 b{ background:linear-gradient(90deg,#00ff88,#00e5ff); -webkit-background-clip:text; background-clip:text; color:transparent; }
-  .sub{ text-align:center; color:#8aa3b0; font-size:14.5px; line-height:1.8; margin:16px auto 10px; max-width:640px; }
-  .note{ text-align:center; color:#5c6f7d; font-size:12px; margin-bottom:46px; }
+  .wrap{ position:relative; z-index:5; max-width:1020px; margin:0 auto; padding:0 24px 80px; }
 
-  .timeline{ position:relative; padding-left:26px; }
-  .timeline::before{ content:''; position:absolute; left:8px; top:10px; bottom:10px; width:2px;
-    background:linear-gradient(180deg,#59d0ae,#00bfff,#00ff88); border-radius:2px; }
+  /* ── 히어로 ── */
+  .hero{ min-height:88vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; position:relative; }
+  .hero .badge{
+    font-size:11.5px; letter-spacing:3px; color:#8aa3b0; border:1px solid rgba(0,255,170,.25);
+    border-radius:999px; padding:7px 18px; margin-bottom:26px; animation:rise 1s ease both;
+    background:rgba(0,0,0,.25); backdrop-filter:blur(6px);
+  }
+  h1.big{
+    font-size:clamp(42px,8vw,84px); font-weight:900; letter-spacing:-3px; line-height:1.08;
+    animation:rise 1s .12s ease both;
+  }
+  h1.big .shimmer{
+    background:linear-gradient(110deg,#00ff88 20%,#8dffd9 38%,#00e5ff 50%,#00ff88 62%,#00e5ff 80%);
+    background-size:250% 100%; -webkit-background-clip:text; background-clip:text; color:transparent;
+    animation:shine 5s linear infinite;
+  }
+  @keyframes shine{ to{ background-position:-250% 0; } }
+  .typerow{ margin-top:22px; font-size:clamp(14px,2.2vw,19px); color:#9fc4bb; min-height:30px; animation:rise 1s .25s ease both; }
+  .typerow .caret{ display:inline-block; width:2px; height:1.1em; background:#00ff88; vertical-align:-2px; margin-left:3px; animation:blink 1s step-end infinite; }
+  @keyframes blink{ 50%{ opacity:0; } }
+  .stats{ display:flex; gap:38px; margin-top:44px; flex-wrap:wrap; justify-content:center; animation:rise 1s .4s ease both; }
+  .stat{ text-align:center; }
+  .stat .n{ font-size:34px; font-weight:900; letter-spacing:-1px; background:linear-gradient(90deg,#00ff88,#00e5ff); -webkit-background-clip:text; background-clip:text; color:transparent; font-variant-numeric:tabular-nums; }
+  .stat p{ font-size:11.5px; color:#5c6f7d; letter-spacing:1.5px; margin-top:4px; }
+  .scrollcue{ position:absolute; bottom:26px; left:50%; transform:translateX(-50%); color:#5c6f7d; font-size:11px; letter-spacing:2px; animation:bob 2s ease-in-out infinite; }
+  @keyframes bob{ 50%{ transform:translate(-50%,8px); } }
+  @keyframes rise{ from{ opacity:0; transform:translateY(24px); } to{ opacity:1; transform:none; } }
+
+  /* ── 티커 ── */
+  .ticker{ overflow:hidden; border-top:1px solid rgba(0,255,170,.12); border-bottom:1px solid rgba(0,255,170,.12); padding:12px 0; margin:10px 0 60px; }
+  .ticker .track{ display:flex; gap:48px; white-space:nowrap; animation:scrolltick 26s linear infinite; width:max-content; }
+  .ticker span{ font-size:12px; letter-spacing:3px; color:#5c6f7d; }
+  .ticker b{ color:#00ff88; font-weight:700; }
+  @keyframes scrolltick{ to{ transform:translateX(-50%); } }
+
+  /* ── 섹션 리빌 ── */
+  .reveal{ opacity:0; transform:translateY(34px); transition:all .8s cubic-bezier(.2,.8,.2,1); }
+  .reveal.in{ opacity:1; transform:none; }
+  .sect-title{ text-align:center; font-size:clamp(22px,3.5vw,32px); font-weight:900; letter-spacing:-1px; margin-bottom:8px; }
+  .sect-sub{ text-align:center; color:#8aa3b0; font-size:13.5px; margin-bottom:44px; line-height:1.8; }
+
+  /* ── 시대 카드 (3D 틸트 + 디오라마) ── */
+  .eras{ display:flex; flex-direction:column; gap:34px; perspective:1400px; }
   .era{
-    position:relative; margin-bottom:26px; background:rgba(255,255,255,.045);
-    border:1px solid rgba(0,255,170,.14); border-radius:20px; padding:24px 26px;
-    transition:all .2s; display:block; text-decoration:none; color:inherit;
+    display:grid; grid-template-columns:1.05fr 1fr; gap:0; border-radius:24px; overflow:hidden;
+    background:rgba(255,255,255,.04); border:1px solid rgba(0,255,170,.14);
+    transition:border-color .3s, box-shadow .3s; transform-style:preserve-3d; position:relative;
   }
-  .era:hover{ transform:translateY(-3px); border-color:rgba(0,229,255,.35); box-shadow:0 16px 44px rgba(0,229,255,.12); }
-  .era::before{ content:''; position:absolute; left:-24px; top:30px; width:12px; height:12px; border-radius:50%;
-    background:linear-gradient(90deg,#00ff88,#00e5ff); box-shadow:0 0 12px rgba(0,255,136,.6); }
-  .era .when{ font-size:11px; font-weight:800; letter-spacing:1.5px; color:#00e5ff; margin-bottom:8px; }
-  .era h2{ font-size:21px; letter-spacing:-0.5px; margin-bottom:8px; }
-  .era p{ font-size:13.5px; color:#8aa3b0; line-height:1.8; }
-  .era .traits{ display:flex; gap:8px; flex-wrap:wrap; margin-top:14px; }
-  .era .traits span{
-    font-size:11px; padding:4px 12px; border-radius:999px; background:rgba(0,0,0,.3);
-    border:1px solid rgba(0,255,170,.14); color:#8aa3b0;
+  .era:hover{ border-color:rgba(0,229,255,.4); box-shadow:0 30px 80px rgba(0,229,255,.14); }
+  .era .glare{
+    position:absolute; inset:0; pointer-events:none; opacity:0; transition:opacity .3s;
+    background:radial-gradient(500px circle at var(--gx,50%) var(--gy,50%), rgba(255,255,255,.08), transparent 60%);
   }
-  .era .go{ margin-top:14px; font-size:13px; font-weight:800; color:#00ff88; }
-  .era.gen1 .swatch{ display:inline-block; width:11px; height:11px; border-radius:3px; margin-right:4px; vertical-align:-1px; }
+  .era:hover .glare{ opacity:1; }
+  .era .info{ padding:34px 36px; display:flex; flex-direction:column; }
+  .era .when{ font-size:11px; font-weight:800; letter-spacing:2.5px; color:#00e5ff; margin-bottom:10px; }
+  .era h2{ font-size:24px; letter-spacing:-0.6px; margin-bottom:10px; }
+  .era p.desc{ font-size:13.5px; color:#8aa3b0; line-height:1.85; flex:1; }
+  .era .traits{ display:flex; gap:7px; flex-wrap:wrap; margin:16px 0; }
+  .era .traits span{ font-size:10.5px; padding:4px 12px; border-radius:999px; background:rgba(0,0,0,.3); border:1px solid rgba(0,255,170,.14); color:#8aa3b0; }
+  .era .btns{ display:flex; gap:10px; flex-wrap:wrap; }
+  .era .btn{
+    text-decoration:none; font-size:13px; font-weight:800; padding:11px 20px; border-radius:12px; transition:all .18s;
+  }
+  .era .btn.solid{ background:linear-gradient(90deg,#00ff88,#00e5ff); color:#00281a; }
+  .era .btn.solid:hover{ transform:translateY(-2px); box-shadow:0 8px 26px rgba(0,255,170,.35); }
+  .era .btn.ghost{ border:1px solid rgba(0,229,255,.35); color:#00e5ff; }
+  .era .btn.ghost:hover{ background:rgba(0,229,255,.08); }
+  @media (max-width:860px){ .era{ grid-template-columns:1fr; } .era .demo{ order:-1; } }
 
-  footer{ position:relative; z-index:5; text-align:center; color:#5c6f7d; font-size:11.5px; padding:0 24px 40px; line-height:1.9; }
+  /* ── 디오라마 공통 ── */
+  .demo{ position:relative; min-height:280px; overflow:hidden; pointer-events:none; }
+  .demo .frame{ position:absolute; inset:22px; border-radius:16px; overflow:hidden; box-shadow:0 20px 50px rgba(0,0,0,.45); }
 
-  /* 방명록 */
-  .guest{ margin-top:40px; background:rgba(255,255,255,.045); border:1px solid rgba(0,255,170,.14); border-radius:20px; padding:24px 26px; }
-  .guest h3{ font-size:16px; margin-bottom:4px; }
+  /* Gen1 디오라마 — 화이트 포털 */
+  .d1 .frame{ background:#fff; }
+  .d1 .bar{ height:8%; display:flex; align-items:center; padding:0 8%; }
+  .d1 .bar i{ width:22%; height:38%; border-radius:99px; background:linear-gradient(90deg,#0CBFFF,#59d0ae); }
+  .d1 .search{
+    margin:2% 8%; height:9%; border:2px solid #59d0ae; border-radius:99px; display:flex; align-items:center; padding:0 4%;
+    position:relative; overflow:hidden;
+  }
+  .d1 .search::after{ content:''; position:absolute; left:14%; width:1.5px; height:52%; background:#333; animation:blink 1s step-end infinite; }
+  .d1 .search b{ margin-left:auto; width:16%; height:64%; background:#59d0ae; border-radius:99px; animation:pulsebtn 2.4s ease-in-out infinite; }
+  @keyframes pulsebtn{ 50%{ transform:scale(1.12); } }
+  .d1 .cols{ display:flex; gap:3%; padding:2% 8%; height:62%; }
+  .d1 .grid{ width:70%; display:grid; grid-template-columns:repeat(3,1fr); gap:6%; align-content:start; }
+  .d1 .cell{ height:34px; border:1.5px solid #e2e5ea; border-radius:8px; position:relative; overflow:hidden; }
+  .d1 .cell::before{ content:''; position:absolute; inset:0; background:linear-gradient(110deg,transparent 30%,rgba(89,208,174,.22) 50%,transparent 70%); background-size:250% 100%; animation:shine 3.2s linear infinite; }
+  .d1 .cell::after{ content:''; position:absolute; right:0; bottom:0; width:70%; height:32%; background:#59d0ae; border-top-left-radius:6px; opacity:.85; }
+  .d1 .rail{ width:27%; display:flex; flex-direction:column; gap:8%; }
+  .d1 .rb{ flex:1; border:1.5px solid #e2e5ea; border-radius:8px; }
+  .d1 .rb.mint{ background:linear-gradient(135deg,#e6fff5,#e0f7ff); border:none; }
+
+  /* Gen2 디오라마 — 다크 채팅 (버블 루프) */
+  .d2 .frame{ background:#0F0F0F; display:flex; }
+  .d2 .sb{ width:26%; border-right:1px solid #262626; padding:7% 5%; display:flex; flex-direction:column; gap:9%; }
+  .d2 .sb i{ height:9px; border-radius:99px; background:#232323; }
+  .d2 .sb i:first-child{ background:linear-gradient(90deg,#00FF88,#00BFFF); opacity:.7; }
+  .d2 .chat{ flex:1; padding:6% 6%; display:flex; flex-direction:column; gap:7%; justify-content:flex-end; }
+  .d2 .bub{ border-radius:11px; padding:0; height:12%; opacity:0; }
+  .d2 .bub.u{ align-self:flex-end; width:52%; background:linear-gradient(90deg,#00FF88,#00BFFF); animation:pop 9s infinite; }
+  .d2 .bub.a1{ align-self:flex-start; width:66%; background:#1E1E1E; border:1px solid #2c2c2c; animation:pop 9s 1.2s infinite; }
+  .d2 .bub.a2{ align-self:flex-start; width:58%; background:#1E1E1E; border:1px solid #2c2c2c; animation:pop 9s 2.4s infinite; }
+  .d2 .bub.v{ align-self:flex-start; width:72%; background:rgba(0,255,136,.1); border:1px solid rgba(0,255,136,.45); animation:pop 9s 3.6s infinite; }
+  @keyframes pop{ 0%,8%{ opacity:0; transform:translateY(10px);} 12%,82%{ opacity:1; transform:none;} 90%,100%{ opacity:0; } }
+
+  /* Gen3 디오라마 — 오로라 (6패널 채움 루프) */
+  .d3 .frame{ background:#05070d; }
+  .d3 .blob{ position:absolute; border-radius:50%; filter:blur(30px); opacity:.4; }
+  .d3 .blob.g{ width:55%; height:55%; background:#00ff88; top:-24%; left:-14%; animation:d1 10s ease-in-out infinite alternate; }
+  .d3 .blob.b{ width:48%; height:48%; background:#00bfff; bottom:-20%; right:-12%; animation:d2 12s ease-in-out infinite alternate; }
+  .d3 .modes{ position:relative; display:flex; gap:4%; padding:8% 10% 0; }
+  .d3 .modes i{ height:12px; border-radius:99px; background:rgba(255,255,255,.1); flex:1; }
+  .d3 .modes i.on{ background:linear-gradient(90deg,#00ff88,#00e5ff); }
+  .d3 .inbar{ position:relative; margin:5% 10%; height:12%; border:1px solid rgba(0,229,255,.4); border-radius:12px; background:rgba(255,255,255,.05); }
+  .d3 .pgrid{ position:relative; display:grid; grid-template-columns:repeat(3,1fr); gap:4%; padding:0 10%; height:40%; }
+  .d3 .pp{ border:1px solid rgba(0,255,170,.2); border-radius:9px; background:rgba(255,255,255,.04); overflow:hidden; position:relative; }
+  .d3 .pp::before{
+    content:''; position:absolute; left:10%; right:10%; top:20%; bottom:20%;
+    background:repeating-linear-gradient(180deg, rgba(0,229,255,.35) 0 2px, transparent 2px 6px);
+    transform:scaleY(0); transform-origin:top; animation:fill 7s infinite;
+  }
+  .d3 .pp:nth-child(1)::before{ animation-delay:.0s; } .d3 .pp:nth-child(2)::before{ animation-delay:.25s; }
+  .d3 .pp:nth-child(3)::before{ animation-delay:.5s; } .d3 .pp:nth-child(4)::before{ animation-delay:.75s; }
+  .d3 .pp:nth-child(5)::before{ animation-delay:1s; } .d3 .pp:nth-child(6)::before{ animation-delay:1.25s; }
+  @keyframes fill{ 0%{ transform:scaleY(0);} 18%,80%{ transform:scaleY(1);} 92%,100%{ transform:scaleY(0);} }
+  .d3 .vbar{
+    position:relative; margin:4% 10% 0; height:9%; border-radius:9px;
+    background:linear-gradient(90deg,rgba(0,255,136,.25),rgba(0,191,255,.25)); border:1px solid rgba(0,255,136,.5);
+    opacity:0; animation:vshow 7s infinite;
+  }
+  @keyframes vshow{ 0%,28%{ opacity:0; } 36%,85%{ opacity:1; box-shadow:0 0 18px rgba(0,255,136,.35);} 95%,100%{ opacity:0; } }
+
+  /* ── 방명록 ── */
+  .guest{ margin-top:70px; background:rgba(255,255,255,.045); border:1px solid rgba(0,255,170,.14); border-radius:22px; padding:28px 30px; }
+  .guest h3{ font-size:17px; margin-bottom:4px; }
   .guest .gs{ font-size:12px; color:#5c6f7d; margin-bottom:14px; }
   .guest .row{ display:flex; gap:8px; flex-wrap:wrap; }
   .guest input{
@@ -64,62 +177,105 @@
   .gbook{ margin-top:14px; display:flex; flex-direction:column; gap:6px; }
   .gitem{ font-size:12.5px; color:#c9e6dc; background:rgba(0,0,0,.25); border:1px solid rgba(0,255,170,.1); border-radius:10px; padding:9px 13px; display:flex; gap:10px; }
   .gitem .gt{ color:#5c6f7d; font-size:11px; flex:none; }
-  .kbd-hint{ text-align:center; font-size:11px; color:#5c6f7d; margin-top:22px; }
+  .kbd-hint{ text-align:center; font-size:11px; color:#5c6f7d; margin-top:26px; }
   .kbd-hint b{ border:1px solid rgba(255,255,255,.2); border-radius:5px; padding:1px 7px; color:#8aa3b0; font-weight:600; }
+
+  footer{ position:relative; z-index:5; text-align:center; color:#5c6f7d; font-size:11.5px; padding:30px 24px 40px; line-height:1.9; }
 </style>
 </head>
 <body>
-<div class="aurora"><i></i><i></i></div>
+<div class="aurora"><i></i><i></i><i></i></div>
+<canvas id="stars"></canvas>
 
 <div class="wrap">
-  <h1>🏛 ZeliAI <b>UI Museum</b></h1>
-  <p class="sub">AI 포털 젤리아이(ZeliAI)가 거쳐온 화면들을 보존하는 작은 박물관입니다.
-  각 전시물은 실제 서비스 코드가 아니라 <b style="color:#00ff88;">정적 HTML로 재현한 "껍데기"</b> —
-  데이터·API·계정 정보 없이 그 시절의 생김새와 상호작용만 남겼습니다.</p>
-  <p class="note">All exhibits are static shells (no data, no APIs). Recreated for design-history preservation.</p>
+  <section class="hero">
+    <div class="badge">EST. 2025 · DESIGN HISTORY ARCHIVE</div>
+    <h1 class="big">🏛 ZeliAI<br><span class="shimmer">UI MUSEUM</span></h1>
+    <div class="typerow"><span id="typer"></span><span class="caret"></span></div>
+    <div class="stats">
+      <div class="stat"><div class="n" data-n="3">0</div><p>전시실</p></div>
+      <div class="stat"><div class="n" data-n="3">0</div><p>UI 세대</p></div>
+      <div class="stat"><div class="n" data-n="6">0</div><p>동시 실행 AI</p></div>
+      <div class="stat"><div class="n" data-n="2026">2025</div><p>현재 진행형</p></div>
+    </div>
+    <div class="scrollcue">SCROLL ▾</div>
+  </section>
 
-  <div class="timeline">
-    <a class="era gen1" href="exhibits/gen1-portal.html">
-      <div class="when">GEN 1 · 2025 · 포털 시대</div>
-      <h2>흰 바탕의 종합 포털</h2>
-      <p>네이버식 종합 포털을 지향하던 첫 얼굴. 필(pill) 모양 AI통합검색 바, 모델 카드 캐러셀,
-      에이전트 카테고리 그리드, 세계시계·날씨·광고가 있는 우측 레일, 크리에이터 지식공유 섹션까지 —
-      한 화면에 모든 것을 담으려 했던 시절입니다.</p>
-      <div class="traits">
-        <span><i class="swatch" style="background:#59d0ae"></i>민트 #59d0ae</span>
-        <span><i class="swatch" style="background:#0CBFFF"></i>시안 #0CBFFF</span>
-        <span>76 : 24 두 컬럼</span><span>아이콘 네비</span><span>화이트 테마</span>
-      </div>
-      <div class="go">전시실 입장 →</div>
-    </a>
+  <div class="ticker"><div class="track" id="tickerTrack">
+    <span><b>ALL THE WORLD'S AI</b> — IN ONE PLACE</span><span>세상의 모든 AI, 하나의 포탈에서</span>
+    <span>PORTAL → CHAT → <b>AURORA</b></span><span>실시간 동시 최대 6개 · 교차검증 · 통합결과</span>
+  </div></div>
 
-    <a class="era" href="exhibits/gen2-chat.html">
-      <div class="when">GEN 2 · 2025–2026 · 채팅 앱 시대</div>
-      <h2>다크 모드 채팅 홈</h2>
-      <p>포털을 접고 채팅 중심 앱으로 전환한 시대. 좌측 최근 대화 서랍, 중앙 웰컴 화면과 예시 카드,
-      하단 입력바 하나로 통합검색·멀티브레인·에이전트를 모두 처리했습니다.
-      "모델을 안 고르면 통합검색"이라는 암묵 규칙과 환각 스코어보드가 이 시대의 발명품.
-      2026년 8월, 신규 홈에 메인 자리를 물려주고 은퇴했습니다.</p>
-      <div class="traits">
-        <span>다크 #0F0F0F</span><span>네온 그린·블루</span><span>서랍식 히스토리</span><span>인페이지 채팅</span>
-      </div>
-      <div class="go">전시실 입장 →</div>
-    </a>
+  <h2 class="sect-title reveal">세 개의 시대, 세 개의 얼굴</h2>
+  <p class="sect-sub reveal">카드 위에서 미니어처가 살아 움직입니다 — 마우스를 올려 기울여 보고,<br>▶ 라이브 데모를 누르면 전시실이 스스로 시연을 시작합니다</p>
 
-    <a class="era" href="exhibits/gen3-aurora.html">
-      <div class="when">GEN 3 · 2026– · 오로라 시대 (현행)</div>
-      <h2>멀티브레인 중심 오로라 랜딩</h2>
-      <p>"실시간 동시 최대 6개의 최신 AI → 교차검증 → 신뢰도 높은 통합결과"를 서비스의 공식 정의로 내세운 현행 UI.
-      통합검색(기본)·오토브레인·멀티브레인 3모드 스위치, 브랜드 단위 모델 벨트(버전은 항상 최신 자동),
-      특허 기술 표기, 3-STEP 원리 카드가 특징입니다.</p>
-      <div class="traits">
-        <span>오로라 그라디언트</span><span>3모드 스위치</span><span>동시 최대 6개</span><span>등록특허 기술</span>
+  <div class="eras">
+    <article class="era reveal" data-tilt>
+      <div class="glare"></div>
+      <div class="info">
+        <div class="when">GEN 1 · 2025 · 포털 시대</div>
+        <h2>흰 바탕의 종합 포털</h2>
+        <p class="desc">네이버식 종합 포털을 지향하던 첫 얼굴. 필 모양 AI통합검색 바, 모델 카드 캐러셀,
+        에이전트 그리드, 세계시계·날씨 레일까지 — 한 화면에 모든 것을 담으려 했던 시절.</p>
+        <div class="traits"><span>민트 #59d0ae</span><span>시안 #0CBFFF</span><span>76 : 24 두 컬럼</span><span>화이트 테마</span></div>
+        <div class="btns">
+          <a class="btn solid" href="exhibits/gen1-portal.html">전시실 입장</a>
+          <a class="btn ghost" href="exhibits/gen1-portal.html?autoplay=1">▶ 라이브 데모</a>
+        </div>
       </div>
-      <div class="go">전시실 입장 →</div>
-    </a>
+      <div class="demo d1"><div class="frame">
+        <div class="bar"><i></i></div>
+        <div class="search"><b></b></div>
+        <div class="cols">
+          <div class="grid"><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div></div>
+          <div class="rail"><div class="rb mint"></div><div class="rb"></div><div class="rb"></div></div>
+        </div>
+      </div></div>
+    </article>
+
+    <article class="era reveal" data-tilt>
+      <div class="glare"></div>
+      <div class="info">
+        <div class="when">GEN 2 · 2025–2026 · 채팅 앱 시대</div>
+        <h2>다크 모드 채팅 홈</h2>
+        <p class="desc">포털을 접고 채팅 중심으로. 서랍식 히스토리, "모델 미선택 = 통합검색"의 암묵 규칙,
+        환각 스코어보드 — 멀티브레인이라는 개념이 여기서 자랐습니다. 2026년 8월 메인에서 은퇴.</p>
+        <div class="traits"><span>다크 #0F0F0F</span><span>네온 그린·블루</span><span>서랍식 히스토리</span><span>모델 선택 모달</span></div>
+        <div class="btns">
+          <a class="btn solid" href="exhibits/gen2-chat.html">전시실 입장</a>
+          <a class="btn ghost" href="exhibits/gen2-chat.html?autoplay=1">▶ 라이브 데모</a>
+        </div>
+      </div>
+      <div class="demo d2"><div class="frame">
+        <div class="sb"><i></i><i></i><i></i><i></i></div>
+        <div class="chat"><div class="bub u"></div><div class="bub a1"></div><div class="bub a2"></div><div class="bub v"></div></div>
+      </div></div>
+    </article>
+
+    <article class="era reveal" data-tilt>
+      <div class="glare"></div>
+      <div class="info">
+        <div class="when">GEN 3 · 2026– · 오로라 시대 (현행)</div>
+        <h2>멀티브레인 중심 오로라 랜딩</h2>
+        <p class="desc">"실시간 동시 최대 6개의 최신 AI → 교차검증 → 신뢰도 높은 통합결과"를 공식 정의로.
+        3모드 스위치, 브랜드 벨트(항상 최신 자동), 특허 기술 표기, 3-STEP 원리 카드.</p>
+        <div class="traits"><span>오로라 그라디언트</span><span>3모드 스위치</span><span>동시 최대 6개</span><span>등록특허 기술</span></div>
+        <div class="btns">
+          <a class="btn solid" href="exhibits/gen3-aurora.html">전시실 입장</a>
+          <a class="btn ghost" href="exhibits/gen3-aurora.html?autoplay=1">▶ 라이브 데모</a>
+        </div>
+      </div>
+      <div class="demo d3"><div class="frame">
+        <div class="blob g"></div><div class="blob b"></div>
+        <div class="modes"><i class="on"></i><i></i><i></i></div>
+        <div class="inbar"></div>
+        <div class="pgrid"><div class="pp"></div><div class="pp"></div><div class="pp"></div><div class="pp"></div><div class="pp"></div><div class="pp"></div></div>
+        <div class="vbar"></div>
+      </div></div>
+    </article>
   </div>
 
-  <section class="guest">
+  <section class="guest reveal">
     <h3>📖 관람객 방명록</h3>
     <div class="gs">이 브라우저에만 저장됩니다 (localStorage) — 서버로 전송되지 않아요</div>
     <div class="row">
@@ -130,7 +286,7 @@
     <div class="gbook" id="gbook"></div>
   </section>
 
-  <div class="kbd-hint">⌨ 키보드 관람: <b>1</b> 포털 시대 · <b>2</b> 채팅 앱 시대 · <b>3</b> 오로라 시대</div>
+  <div class="kbd-hint reveal">⌨ 키보드 관람: <b>1</b> 포털 시대 · <b>2</b> 채팅 앱 시대 · <b>3</b> 오로라 시대</div>
 </div>
 
 <footer>
@@ -139,7 +295,91 @@
 </footer>
 
 <script>
-  // ── 방명록 (localStorage 전용 — 서버 전송 없음) ──
+  // ── 파티클 캔버스 (오로라 먼지) ──
+  (function(){
+    var cv=document.getElementById('stars'), cx=cv.getContext('2d');
+    var W,H,ps=[],N=70,mx=-1,my=-1;
+    function size(){ W=cv.width=innerWidth; H=cv.height=innerHeight; }
+    size(); addEventListener('resize',size);
+    for(var i=0;i<N;i++) ps.push({
+      x:Math.random()*innerWidth, y:Math.random()*innerHeight,
+      r:Math.random()*1.6+0.4, vx:(Math.random()-.5)*.25, vy:(Math.random()-.5)*.25,
+      c:Math.random()<.5?'0,255,136':'0,191,255', a:Math.random()*.5+.15
+    });
+    addEventListener('mousemove',function(e){ mx=e.clientX; my=e.clientY; });
+    (function tick(){
+      cx.clearRect(0,0,W,H);
+      ps.forEach(function(p){
+        p.x+=p.vx; p.y+=p.vy;
+        if(mx>=0){ var dx=p.x-mx, dy=p.y-my, d2=dx*dx+dy*dy;
+          if(d2<16000){ p.x+=dx*0.012; p.y+=dy*0.012; } }
+        if(p.x<0)p.x=W; if(p.x>W)p.x=0; if(p.y<0)p.y=H; if(p.y>H)p.y=0;
+        cx.beginPath(); cx.arc(p.x,p.y,p.r,0,7);
+        cx.fillStyle='rgba('+p.c+','+p.a+')'; cx.fill();
+      });
+      requestAnimationFrame(tick);
+    })();
+  })();
+
+  // ── 타이핑 문구 순환 ──
+  (function(){
+    var lines=[
+      '세상의 모든 AI, 하나의 포탈에서',
+      'PORTAL (2025) → CHAT (2025–26) → AURORA (2026–)',
+      '실시간 동시 최대 6개 · 교차검증 · 통합결과',
+      '한 서비스가 얼굴을 바꿔온 기록'
+    ];
+    var el=document.getElementById('typer'), li=0, ci=0, del=false;
+    (function step(){
+      var line=lines[li];
+      if(!del){ el.textContent=line.slice(0,++ci);
+        if(ci===line.length){ del=true; return setTimeout(step,1800); }
+        return setTimeout(step,46);
+      }
+      el.textContent=line.slice(0,--ci);
+      if(ci===0){ del=false; li=(li+1)%lines.length; return setTimeout(step,350); }
+      setTimeout(step,18);
+    })();
+  })();
+
+  // ── 숫자 카운트업 ──
+  (function(){
+    var done=false;
+    function run(){
+      if(done) return; done=true;
+      document.querySelectorAll('.stat .n').forEach(function(el){
+        var target=+el.dataset.n, start=+el.textContent, t0=performance.now();
+        (function f(now){
+          var p=Math.min((now-t0)/1400,1), e=1-Math.pow(1-p,3);
+          el.textContent=Math.round(start+(target-start)*e);
+          if(p<1) requestAnimationFrame(f);
+        })(t0);
+      });
+    }
+    setTimeout(run,600);
+  })();
+
+  // ── 스크롤 리빌 ──
+  var io=new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  },{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+
+  // ── 3D 틸트 + 글레어 ──
+  document.querySelectorAll('[data-tilt]').forEach(function(card){
+    card.addEventListener('mousemove',function(e){
+      var r=card.getBoundingClientRect();
+      var px=(e.clientX-r.left)/r.width, py=(e.clientY-r.top)/r.height;
+      card.style.transform='rotateY('+((px-.5)*7)+'deg) rotateX('+((.5-py)*5)+'deg)';
+      card.style.setProperty('--gx',(px*100)+'%'); card.style.setProperty('--gy',(py*100)+'%');
+    });
+    card.addEventListener('mouseleave',function(){ card.style.transform=''; });
+  });
+
+  // ── 티커 무한 루프용 복제 ──
+  (function(){ var t=document.getElementById('tickerTrack'); t.innerHTML+=t.innerHTML; })();
+
+  // ── 방명록 (localStorage 전용) ──
   function loadGuest(){
     var book=document.getElementById('gbook'); book.innerHTML='';
     var items=[];
@@ -165,12 +405,13 @@
   }
   document.getElementById('gmsg').addEventListener('keydown',function(e){ if(e.key==='Enter') signGuest(); });
   loadGuest();
+
   // ── 키보드 관람 ──
-  window.addEventListener('keydown',function(e){
+  addEventListener('keydown',function(e){
     if(e.target.tagName==='INPUT') return;
-    if(e.key==='1') location.href='exhibits/gen1-portal.html';
-    if(e.key==='2') location.href='exhibits/gen2-chat.html';
-    if(e.key==='3') location.href='exhibits/gen3-aurora.html';
+    if(e.key==='1') location.href='exhibits/gen1-portal.html?autoplay=1';
+    if(e.key==='2') location.href='exhibits/gen2-chat.html?autoplay=1';
+    if(e.key==='3') location.href='exhibits/gen3-aurora.html?autoplay=1';
   });
 </script>
 </body>
