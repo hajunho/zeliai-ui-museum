@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gen 1 — 포털 시대 (2025) · ZeliAI UI Museum</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body{ font-family:'GmarketSans','Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif; background:#fff; color:#222; }
+  a{ text-decoration:none; color:inherit; }
+  .museum-bar{
+    background:#111; color:#9ca3af; font-size:12px; padding:8px 16px; display:flex; gap:14px; align-items:center;
+    position:sticky; top:0; z-index:99;
+  }
+  .museum-bar b{ color:#59d0ae; }
+  .museum-bar a{ color:#0cbfff; margin-left:auto; }
+  .wrap{ max-width:80rem; margin:0 auto; padding:0 16px; }
+
+  /* 헤더: 로고 + 알림 + 아바타 (텍스트 네비 없음이 특징) */
+  .hd{ display:flex; align-items:center; padding:18px 0 10px; }
+  .logo{ font-size:26px; font-weight:900; letter-spacing:-1px; }
+  .logo b{ color:#0CBFFF; }
+  .hd .right{ margin-left:auto; display:flex; gap:14px; align-items:center; }
+  .bell{ position:relative; font-size:20px; cursor:pointer; }
+  .bell i{
+    position:absolute; top:-6px; right:-8px; background:#ff4d4f; color:#fff; font-style:normal;
+    font-size:9px; border-radius:99px; padding:1px 5px; font-weight:700;
+  }
+  .avatar{ width:34px; height:34px; border-radius:50%; background:#e5e7eb; display:flex; align-items:center; justify-content:center; cursor:pointer; }
+
+  /* 히어로 한 줄 */
+  .hero{ text-align:center; padding:26px 0 8px; font-size:30px; font-weight:800; letter-spacing:-0.5px; }
+  .grad{ background:linear-gradient(90deg,#0CBFFF,#59d0ae); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .brandword{ color:#0CBFFF; text-shadow:0 0 12px rgba(12,191,255,.45), 0 0 24px rgba(12,191,255,.25); font-weight:900; }
+
+  /* 아이콘 네비 */
+  .topmenu{ display:flex; justify-content:center; align-items:center; gap:26px; padding:22px 0 26px; }
+  .tm{ text-align:center; cursor:pointer; }
+  .tm .ic{ font-size:30px; }
+  .tm p{ font-size:13px; color:#0cbfff; margin-top:6px; font-weight:700; }
+  .tmbar{ width:1px; height:38px; background:#d1d5db; }
+
+  /* AI통합검색 필 바 */
+  .searchwrap{ display:flex; justify-content:center; padding-bottom:34px; }
+  .searchbar{
+    width:min(65rem,100%); height:4rem; border:2px solid #59d0ae; border-radius:999px;
+    display:flex; align-items:center; overflow:hidden; background:#fff;
+  }
+  .searchbar .label{ padding:0 20px; font-weight:800; font-size:15px; white-space:nowrap; }
+  .searchbar .div{ width:1px; height:55%; background:#989898; }
+  .searchbar .glyph{ padding:0 14px; font-size:18px; }
+  .searchbar input{ flex:1; border:none; outline:none; font-size:15px; font-family:inherit; }
+  .searchbar .mic,.searchbar .plus{ padding:0 10px; font-size:18px; cursor:pointer; }
+  .searchbar .plus{
+    background:#59D0AE; color:#fff; border-radius:50%; width:32px; height:32px; display:flex;
+    align-items:center; justify-content:center; margin-right:10px; padding:0; font-weight:700;
+  }
+  .searchbar button{
+    height:100%; padding:0 34px; border:none; background:#59d0ae; color:#fff; font-size:16px;
+    font-weight:800; cursor:pointer; font-family:inherit;
+  }
+  .searchbar button:hover{ background:#51ba9c; }
+
+  /* 2컬럼 */
+  .cols{ display:flex; gap:20px; align-items:flex-start; }
+  .left{ width:76%; }
+  .rail{ width:24%; display:flex; flex-direction:column; gap:14px; }
+  @media (max-width:1024px){ .cols{ flex-direction:column; } .left,.rail{ width:100%; } }
+
+  .sec{ margin-bottom:38px; }
+  .sec h2{ font-size:24px; font-weight:800; line-height:1.45; letter-spacing:-0.5px; margin-bottom:4px; }
+  .sec .subt{ color:#888; font-size:13px; margin-bottom:16px; }
+  .pill{ display:inline-block; font-size:12px; font-weight:800; color:#fff; padding:4px 14px; border-radius:999px; margin-bottom:12px; }
+  .pill.lang{ background:#0DC1FC; }
+  .pill.img{ background:#FF6B9D; }
+
+  .cards{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  @media (max-width:900px){ .cards{ grid-template-columns:repeat(2,1fr); } }
+  .mcard{
+    position:relative; background:#fff; border:2px solid #d1d5db; border-radius:16px; height:6rem;
+    display:flex; align-items:center; padding:0 0 0 14px; cursor:pointer; overflow:hidden; transition:border-color .15s;
+  }
+  .mcard:hover{ border-color:#59d0ae; }
+  .mcard .mlogo{ width:44px; height:44px; border-radius:10px; background:#f3f4f6; display:flex; align-items:center; justify-content:center; font-size:20px; flex:none; }
+  .mcard .mname{ font-size:13.5px; font-weight:700; margin-left:10px; }
+  .mcard .tagbar{
+    position:absolute; right:0; bottom:0; width:75%; background:#59d0ae; color:#fff; font-size:10.5px;
+    padding:5px 10px; border-top-left-radius:12px; font-weight:700;
+  }
+  .mcard.selected{ border-color:#59d0ae; box-shadow:0 0 0 2px rgba(89,208,174,.3); }
+
+  .agrid{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+  @media (max-width:900px){ .agrid{ grid-template-columns:repeat(2,1fr); } }
+  .acard{
+    border:2px solid #d1d5db; border-radius:16px; padding:20px 12px; text-align:center; cursor:pointer; transition:all .15s;
+  }
+  .acard:hover{ border-color:#59d0ae; color:#59d0ae; }
+  .acard .ic{ font-size:26px; }
+  .acard p{ font-size:13px; font-weight:700; margin-top:8px; }
+
+  .mbbar{
+    margin-top:16px; display:flex; border:2px solid #59d0ae; border-radius:999px; overflow:hidden; height:3.4rem;
+  }
+  .mbbar input{ flex:1; border:none; outline:none; padding:0 20px; font-size:14px; font-family:inherit; }
+  .mbbar button{ border:none; background:#59d0ae; color:#fff; font-weight:800; padding:0 30px; cursor:pointer; font-family:inherit; }
+  .mbnote{ font-size:12px; color:#888; margin-top:8px; }
+
+  /* 우측 레일 박스 */
+  .box{ border:2px solid #d1d5db; border-radius:16px; padding:16px; background:#fff; }
+  .box h4{ font-size:14px; font-weight:800; margin-bottom:10px; }
+  .box h4.blue{ color:#0570c0; }
+  .loginbtn{
+    width:100%; background:#59d0ae; border:none; color:#fff; font-weight:800; padding:12px; border-radius:10px;
+    cursor:pointer; font-size:14px; font-family:inherit; margin:10px 0;
+  }
+  .loginbtn:hover{ background:#51ba9c; }
+  .loginlinks{ display:flex; justify-content:center; gap:8px; font-size:11.5px; color:#888; }
+  .clock{ font-size:32px; font-weight:900; text-align:center; letter-spacing:2px; font-variant-numeric:tabular-nums; }
+  .clockgrid{ display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:12px; color:#606060; margin-top:10px; border-top:1px solid #e5e7eb; padding-top:10px; }
+  .temp{ font-size:40px; font-weight:900; color:#0cbfff; }
+  .wrow{ display:flex; gap:12px; font-size:12px; color:#606060; margin-top:8px; }
+  .adbox{ border-radius:12px; background:#f3f4f6; height:64px; display:flex; align-items:center; justify-content:center; color:#9ca3af; font-size:12px; }
+
+  /* 지식공유 */
+  .under{ border-top:2px solid #e5e7eb; margin-top:16px; padding-top:30px; }
+  .under .head{ display:flex; gap:20px; align-items:center; flex-wrap:wrap; margin-bottom:20px; }
+  .under .head .bnr{ flex:1; min-width:240px; height:100px; background:linear-gradient(90deg,#e0f7ff,#e3fff4); border-radius:20px; display:flex; align-items:center; justify-content:center; color:#59d0ae; font-weight:800; }
+  .ugrid{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:12px; }
+  @media (max-width:900px){ .ugrid{ grid-template-columns:1fr; } }
+  .ubox{ border:2px solid #d1d5db; border-radius:16px; padding:18px; min-height:110px; }
+  .ubox h5{ font-size:14px; font-weight:800; margin-bottom:8px; }
+  .ubox p{ font-size:12px; color:#888; line-height:1.6; }
+
+  /* 푸터 */
+  footer{ background:#ededed; margin-top:44px; padding:26px 0; }
+  footer .rows{ max-width:80rem; margin:0 auto; padding:0 16px; font-size:12px; color:#606060; line-height:2; }
+  footer .links span{ margin-right:14px; cursor:pointer; }
+  footer .links span:hover{ color:#0cbfff; }
+</style>
+</head>
+<body>
+
+<div class="museum-bar">
+  🏛 <b>ZeliAI UI Museum</b> · Gen 1 — 포털 시대 (2025) · 정적 재현 전시물 (실서비스 아님, 데이터·API 없음)
+  <a href="../index.html">← 박물관 로비로</a>
+</div>
+
+<header class="wrap hd">
+  <div class="logo">Zeli<b>AI</b></div>
+  <div class="right">
+    <div class="bell">🔔<i>3</i></div>
+    <div class="avatar">👤</div>
+  </div>
+</header>
+
+<div class="wrap hero">
+  <span class="grad">세상의 모든 전문가, 당신의 포털</span> <span class="brandword">젤리아이</span>
+</div>
+
+<nav class="wrap topmenu">
+  <div class="tm"><div class="ic">🌐</div><p>AI 에그리게이터</p></div>
+  <div class="tmbar"></div>
+  <div class="tm"><div class="ic">🤖</div><p>AI 에이전트</p></div>
+  <div class="tmbar"></div>
+  <div class="tm"><div class="ic">🧠</div><p>AI 멀티브레인</p></div>
+  <div class="tmbar"></div>
+  <div class="tm"><div class="ic">💡</div><p>AI 지식공유</p></div>
+</nav>
+
+<div class="wrap searchwrap">
+  <div class="searchbar">
+    <span class="label">AI통합검색</span>
+    <span class="div"></span>
+    <span class="glyph">🔎</span>
+    <input placeholder="검색할 내용을 입력하세요" />
+    <span class="mic">🎤</span>
+    <span class="plus">＋</span>
+    <button onclick="alert('전시물입니다 — 검색은 동작하지 않아요 🙂')">검색</button>
+  </div>
+</div>
+
+<div class="wrap cols">
+  <div class="left">
+    <section class="sec">
+      <h2><span class="grad">모든 AI를 한 곳에서,<br>글로벌 AI 허브</span></h2>
+      <div class="subt">AI 에그리게이터</div>
+      <span class="pill lang">언어 모델</span>
+      <div class="cards">
+        <div class="mcard"><span class="mlogo">✳</span><span class="mname">Gemini 시리즈</span><span class="tagbar">#초고속AI #실시간검색</span></div>
+        <div class="mcard"><span class="mlogo">◯</span><span class="mname">GPT 시리즈</span><span class="tagbar">#범용AI #대화형</span></div>
+        <div class="mcard"><span class="mlogo">✴</span><span class="mname">Claude 시리즈</span><span class="tagbar">#긴문서 #추론</span></div>
+        <div class="mcard"><span class="mlogo">✖</span><span class="mname">Grok 시리즈</span><span class="tagbar">#실시간 #유머</span></div>
+      </div>
+      <div style="height:12px"></div>
+      <span class="pill img">이미지 모델</span>
+      <div class="cards">
+        <div class="mcard"><span class="mlogo">🎨</span><span class="mname">DALL·E</span><span class="tagbar">#이미지생성</span></div>
+        <div class="mcard"><span class="mlogo">🖼</span><span class="mname">GPT Image</span><span class="tagbar">#고품질</span></div>
+        <div class="mcard"><span class="mlogo">🌌</span><span class="mname">Grok Image</span><span class="tagbar">#창의적</span></div>
+        <div class="mcard" style="opacity:.5"><span class="mlogo">＋</span><span class="mname">Coming soon</span><span class="tagbar">#추가예정</span></div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <h2><span class="grad">똑똑한 AI,<br>당신의 인사이트 파트너</span></h2>
+      <div class="subt">AI 에이전트 서비스</div>
+      <div class="agrid">
+        <div class="acard"><div class="ic">🏠</div><p>라이프스타일/일상</p></div>
+        <div class="acard"><div class="ic">📚</div><p>교육/학습</p></div>
+        <div class="acard"><div class="ic">🩺</div><p>의료/헬스케어</p></div>
+        <div class="acard"><div class="ic">⚖️</div><p>법률/계약</p></div>
+        <div class="acard"><div class="ic">💼</div><p>경영지원</p></div>
+        <div class="acard"><div class="ic">💻</div><p>IT/개발</p></div>
+        <div class="acard"><div class="ic">🎨</div><p>디자인/크리에이티브</p></div>
+        <div class="acard"><div class="ic">📣</div><p>마케팅/광고/콘텐츠</p></div>
+        <div class="acard"><div class="ic">🏛</div><p>공공/행정</p></div>
+        <div class="acard"><div class="ic">📈</div><p>금융/재무</p></div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <h2><span class="grad">AI 한계를 넘어서,<br>맛있는 정보</span></h2>
+      <div class="subt">AI 멀티브레인 서비스 — 카드를 눌러 선택해 보세요 (최대 6개)</div>
+      <div class="cards" id="mbCards">
+        <div class="mcard mb"><span class="mlogo">✳</span><span class="mname">Gemini</span><span class="tagbar">#선택가능</span></div>
+        <div class="mcard mb"><span class="mlogo">◯</span><span class="mname">GPT</span><span class="tagbar">#선택가능</span></div>
+        <div class="mcard mb"><span class="mlogo">✴</span><span class="mname">Claude</span><span class="tagbar">#선택가능</span></div>
+        <div class="mcard mb"><span class="mlogo">✖</span><span class="mname">Grok</span><span class="tagbar">#선택가능</span></div>
+        <div class="mcard mb"><span class="mlogo">🦙</span><span class="mname">Llama</span><span class="tagbar">#선택가능</span></div>
+        <div class="mcard mb"><span class="mlogo">🌀</span><span class="mname">Mistral</span><span class="tagbar">#선택가능</span></div>
+        <div class="mcard mb"><span class="mlogo">🔎</span><span class="mname">Perplexity</span><span class="tagbar">#선택가능</span></div>
+        <div class="mcard mb"><span class="mlogo">🐉</span><span class="mname">Qwen</span><span class="tagbar">#선택가능</span></div>
+      </div>
+      <div class="mbbar">
+        <input placeholder="키워드를 입력하세요" />
+        <button onclick="alert('전시물입니다 — 멀티브레인은 동작하지 않아요 🙂')">검색</button>
+      </div>
+      <div class="mbnote" id="mbNote">선택된 모델: 0개</div>
+    </section>
+  </div>
+
+  <aside class="rail">
+    <div class="box">
+      <h4>로그인이 필요합니다</h4>
+      <p style="font-size:12px;color:#888;line-height:1.6;">로그인하고 젤리아이의<br>모든 서비스를 이용해 보세요</p>
+      <button class="loginbtn" onclick="alert('전시물입니다 🙂')">로그인 하기</button>
+      <div class="loginlinks"><span>아이디찾기</span>|<span>비밀번호찾기</span>|<span>회원가입</span></div>
+    </div>
+    <div class="box">
+      <h4 class="blue">🕐 세계 주요 시간</h4>
+      <div class="clock" id="clock">00:00:00</div>
+      <div class="clockgrid">
+        <div>🇺🇸 미국/뉴욕 <b>-13h</b></div>
+        <div>🇬🇧 영국/런던 <b>-8h</b></div>
+      </div>
+    </div>
+    <div class="box">
+      <h4>서울 · 맑음</h4>
+      <div class="temp">23°C</div>
+      <div class="wrow"><span>체감 24°</span><span>최고 27°</span><span>최저 18°</span></div>
+      <div class="wrow"><span>💧 습도 55%</span><span>🍃 풍량 2m/s</span><span>☀️ 자외선 보통</span></div>
+    </div>
+    <div class="box" style="display:flex;flex-direction:column;gap:8px;">
+      <div class="adbox">AD 배너 자리 1</div>
+      <div class="adbox">AD 배너 자리 2</div>
+      <div class="adbox">AD 배너 자리 3</div>
+    </div>
+  </aside>
+</div>
+
+<div class="wrap under">
+  <div class="head">
+    <div>
+      <h2 style="font-size:24px;font-weight:800;line-height:1.45;"><span class="grad">내가 만든 에이전트,<br>내가 만든 디지털 작품</span></h2>
+      <div class="subt">AI 크리에이터 지식 공유 플랫폼</div>
+    </div>
+    <div class="bnr">지식공유 배너</div>
+  </div>
+  <div class="ugrid">
+    <div class="ubox"><h5>🖼 이미지 공유</h5><p>AI로 만든 이미지 작품을 공유하는 공간이었습니다.</p></div>
+    <div class="ubox"><h5>🎬 영상 공유</h5><p>AI 영상 창작물 갤러리.</p></div>
+    <div class="ubox"><h5>🎵 사운드 공유</h5><p>AI 음악·사운드 창작물.</p></div>
+  </div>
+  <div class="ugrid">
+    <div class="ubox"><h5>🤖 에이전트 만들기</h5><p>나만의 에이전트 제작 코너.</p></div>
+    <div class="ubox"><h5>🧪 크리에이트 랩</h5><p>실험적 창작 공간.</p></div>
+    <div class="ubox"><h5>💬 크리에이터 토론</h5><p>창작자 커뮤니티 게시판.</p></div>
+  </div>
+</div>
+
+<footer>
+  <div class="rows">
+    <div class="links"><span>회사소개</span><span>이용약관</span><span>개인정보처리방침</span><span>청소년보호정책</span><span>제휴문의</span><span>고객센터</span></div>
+    <div class="links"><span>AI 에그리게이터</span><span>AI 에이전트</span><span>AI 멀티브레인</span><span>AI 크리에이터</span></div>
+    <div style="margin-top:6px;">ⓒ ZeliAI — UI Museum 전시용 재현본 (연락처·주소 등 실정보는 생략)</div>
+  </div>
+</footer>
+
+<script>
+  // 시계 (전시용)
+  setInterval(function(){
+    var d=new Date();
+    var p=function(n){return String(n).padStart(2,"0");};
+    document.getElementById("clock").textContent=p(d.getHours())+":"+p(d.getMinutes())+":"+p(d.getSeconds());
+  },1000);
+  // 멀티브레인 카드 선택 (최대 6)
+  var note=document.getElementById("mbNote");
+  document.querySelectorAll("#mbCards .mcard").forEach(function(c){
+    c.addEventListener("click",function(){
+      var sel=document.querySelectorAll("#mbCards .selected").length;
+      if(!c.classList.contains("selected") && sel>=6){ alert("모델은 최대 6개까지 선택할 수 있습니다"); return; }
+      c.classList.toggle("selected");
+      note.textContent="선택된 모델: "+document.querySelectorAll("#mbCards .selected").length+"개";
+    });
+  });
+</script>
+</body>
+</html>

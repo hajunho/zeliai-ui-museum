@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gen 2 — 채팅 앱 시대 (2025–2026) · ZeliAI UI Museum</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body{ font-family:'Pretendard','Apple SD Gothic Neo','Malgun Gothic',sans-serif; background:#0F0F0F; color:#fff; min-height:100vh; }
+  .museum-bar{
+    background:#111; color:#9ca3af; font-size:12px; padding:8px 16px; display:flex; gap:14px; align-items:center;
+    border-bottom:1px solid #2A2A2A; position:sticky; top:0; z-index:99;
+  }
+  .museum-bar b{ color:#00FF88; }
+  .museum-bar a{ color:#00BFFF; margin-left:auto; text-decoration:none; }
+
+  /* 헤더 */
+  .hd{
+    height:56px; display:flex; align-items:center; gap:18px; padding:0 20px; border-bottom:1px solid #2A2A2A;
+  }
+  .logo{ font-size:19px; font-weight:900; letter-spacing:-0.5px; }
+  .logo b{ color:#00BFFF; }
+  .tabs{ display:flex; gap:4px; margin-left:10px; }
+  .tab{ font-size:13px; color:#B0B0B0; padding:7px 14px; border-radius:999px; cursor:pointer; }
+  .tab:hover{ color:#fff; background:#1A1A1A; }
+  .tab.on{ background:linear-gradient(90deg,#00FF88,#00BFFF); color:#001510; font-weight:800; }
+  .hd .right{ margin-left:auto; display:flex; gap:12px; align-items:center; font-size:17px; }
+  .hd .right span{ cursor:pointer; color:#B0B0B0; }
+  .avatar{ width:32px; height:32px; border-radius:50%; background:#2A2A2A; display:flex; align-items:center; justify-content:center; }
+
+  .shell{ display:flex; height:calc(100vh - 56px - 33px); }
+
+  /* 사이드바 (서랍) */
+  .side{
+    width:288px; background:#0F0F0F; border-right:1px solid #2A2A2A; display:flex; flex-direction:column; flex:none;
+    transition:margin-left .25s ease;
+  }
+  .side.hidden{ margin-left:-288px; }
+  .side .newchat{
+    margin:14px; padding:11px; border:1px solid #2A2A2A; border-radius:12px; background:#1A1A1A; color:#fff;
+    font-size:13.5px; cursor:pointer; font-family:inherit; text-align:left;
+  }
+  .side .newchat:hover{ border-color:#00FF88; }
+  .side h6{ font-size:11px; color:#666; padding:6px 18px; letter-spacing:1px; }
+  .chatitem{ padding:10px 18px; font-size:13px; color:#B0B0B0; cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .chatitem:hover{ background:#1A1A1A; color:#fff; }
+  .chatitem .t{ font-size:10.5px; color:#555; display:block; margin-top:2px; }
+  .side .foot{ margin-top:auto; padding:14px 18px; border-top:1px solid #2A2A2A; font-size:12px; color:#666; }
+
+  /* 메인 */
+  .main{ flex:1; display:flex; flex-direction:column; align-items:center; overflow-y:auto; position:relative; }
+  .toggle{
+    position:absolute; left:10px; top:10px; background:#1A1A1A; border:1px solid #2A2A2A; color:#B0B0B0;
+    border-radius:9px; padding:6px 10px; cursor:pointer; font-size:13px;
+  }
+  .welcome{ margin-top:9vh; text-align:center; padding:0 20px; }
+  .welcome h1{ font-size:30px; font-weight:800; letter-spacing:-0.8px; line-height:1.4; }
+  .welcome h1 b{ background:linear-gradient(90deg,#00FF88,#00BFFF); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .welcome p{ color:#B0B0B0; font-size:14px; margin-top:10px; }
+
+  .examples{ display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin:30px auto 0; max-width:640px; padding:0 20px; }
+  @media (max-width:700px){ .examples{ grid-template-columns:1fr; } }
+  .ex{
+    border:1px solid #2A2A2A; background:#1A1A1A; border-radius:14px; padding:14px 16px; text-align:left;
+    font-size:13px; color:#ddd; cursor:pointer; line-height:1.55;
+  }
+  .ex:hover{ border-color:#00FF88; }
+  .ex small{ display:block; color:#666; font-size:11px; margin-bottom:4px; }
+
+  /* 스코어보드 배지 (당시 특징) */
+  .score{
+    margin:26px auto 0; display:flex; gap:14px; font-size:12px; color:#888; align-items:center;
+    border:1px solid #2A2A2A; border-radius:999px; padding:8px 18px; background:#141414;
+  }
+  .score b{ color:#00FF88; font-variant-numeric:tabular-nums; }
+
+  /* 입력 바 */
+  .inputwrap{ margin-top:auto; width:100%; display:flex; justify-content:center; padding:20px; }
+  .inputbar{
+    width:min(760px,100%); background:#1a1a1a; border:1px solid #374151; border-radius:18px; padding:12px 14px;
+  }
+  .inputbar:focus-within{ border-color:#00FF88; }
+  .inputbar textarea{
+    width:100%; background:transparent; border:none; outline:none; resize:none; color:#fff;
+    font-size:14.5px; font-family:inherit; min-height:44px;
+  }
+  .brow{ display:flex; align-items:center; gap:8px; margin-top:6px; }
+  .chip{
+    font-size:12px; color:#B0B0B0; border:1px solid #2A2A2A; border-radius:999px; padding:6px 12px; cursor:pointer;
+  }
+  .chip:hover{ color:#00FF88; border-color:#00FF88; }
+  .send{
+    margin-left:auto; background:linear-gradient(90deg,#00FF88,#00BFFF); border:none; color:#001510;
+    font-weight:800; border-radius:11px; padding:9px 20px; cursor:pointer; font-size:13.5px; font-family:inherit;
+  }
+</style>
+</head>
+<body>
+
+<div class="museum-bar">
+  🏛 <b>ZeliAI UI Museum</b> · Gen 2 — 채팅 앱 시대 (2025–2026) · 2026-08 신규 홈으로 교체되며 메인에서 은퇴 · 정적 재현 전시물
+  <a href="../index.html">← 박물관 로비로</a>
+</div>
+
+<header class="hd">
+  <div class="logo">Zeli<b>AI</b></div>
+  <nav class="tabs">
+    <span class="tab on">AI 통합검색</span>
+    <span class="tab">에이전트</span>
+    <span class="tab">뉴스</span>
+    <span class="tab">멀티모달</span>
+  </nav>
+  <div class="right">
+    <span>🔔</span><span>🌐</span><div class="avatar">👤</div>
+  </div>
+</header>
+
+<div class="shell">
+  <aside class="side" id="side">
+    <button class="newchat">＋ 새 대화</button>
+    <h6>최근 대화</h6>
+    <div class="chatitem">📎 계약서 위험 조항 검토<span class="t">멀티브레인 · 어제</span></div>
+    <div class="chatitem">🔎 2026 반도체 시장 전망<span class="t">통합검색 · 어제</span></div>
+    <div class="chatitem">🖼 제품 소개 이미지 4종<span class="t">멀티모달 · 2일 전</span></div>
+    <div class="chatitem">⚡ 여행 일정 초안 짜줘<span class="t">에그리게이터 · 3일 전</span></div>
+    <div class="chatitem">🔎 환율 전망 정리<span class="t">통합검색 · 5일 전</span></div>
+    <div class="foot">🍮 젤리 잔액 · ★★★,★★★</div>
+  </aside>
+
+  <main class="main">
+    <button class="toggle" onclick="document.getElementById('side').classList.toggle('hidden')">☰ 서랍</button>
+    <div class="welcome">
+      <h1>무엇을 도와드릴까요?<br><b>세상의 모든 AI, 하나의 포탈에서</b></h1>
+      <p>모델을 선택하지 않으면 AI 통합검색으로, 여러 모델을 선택하면 멀티브레인으로 동작했습니다</p>
+    </div>
+    <div class="examples">
+      <button class="ex"><small>통합검색</small>오늘 반도체 관련 주요 뉴스 정리해줘</button>
+      <button class="ex"><small>멀티브레인</small>이 계약서에서 위험한 조항을 여러 AI로 교차검증해줘</button>
+      <button class="ex"><small>에이전트</small>이력서를 직무에 맞게 다듬어줘</button>
+      <button class="ex"><small>멀티모달</small>바다 위 일출 이미지를 그려줘</button>
+    </div>
+    <div class="score">🏆 이번 주 환각 스코어보드 <span>Claude <b>94.2%</b></span><span>GPT <b>91.8%</b></span><span>Gemini <b>89.1%</b></span></div>
+    <div class="inputwrap">
+      <div class="inputbar">
+        <textarea rows="2" placeholder="질문을 입력하세요 (모델 미선택 = AI 통합검색)"></textarea>
+        <div class="brow">
+          <span class="chip">🧠 모델 선택</span>
+          <span class="chip">📎 파일</span>
+          <span class="chip">🎤 음성</span>
+          <button class="send" onclick="alert('전시물입니다 — 전송은 동작하지 않아요 🙂')">전송</button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+  document.querySelectorAll('.ex').forEach(function(b){
+    b.addEventListener('click', function(){
+      document.querySelector('.inputbar textarea').value = b.textContent.replace(/^[^\n]*\n?/, '').trim() || b.innerText;
+    });
+  });
+</script>
+</body>
+</html>
