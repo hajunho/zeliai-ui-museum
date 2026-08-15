@@ -46,6 +46,26 @@
   .era.gen1 .swatch{ display:inline-block; width:11px; height:11px; border-radius:3px; margin-right:4px; vertical-align:-1px; }
 
   footer{ position:relative; z-index:5; text-align:center; color:#5c6f7d; font-size:11.5px; padding:0 24px 40px; line-height:1.9; }
+
+  /* 방명록 */
+  .guest{ margin-top:40px; background:rgba(255,255,255,.045); border:1px solid rgba(0,255,170,.14); border-radius:20px; padding:24px 26px; }
+  .guest h3{ font-size:16px; margin-bottom:4px; }
+  .guest .gs{ font-size:12px; color:#5c6f7d; margin-bottom:14px; }
+  .guest .row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .guest input{
+    flex:1; min-width:180px; background:rgba(0,0,0,.3); border:1px solid rgba(0,255,170,.14); border-radius:12px;
+    padding:11px 14px; font-size:13.5px; color:#e8f6f2; outline:none; font-family:inherit;
+  }
+  .guest input:focus{ border-color:rgba(0,229,255,.4); }
+  .guest button{
+    border:none; border-radius:12px; padding:11px 22px; background:linear-gradient(90deg,#00ff88,#00e5ff);
+    color:#00281a; font-weight:800; cursor:pointer; font-family:inherit; font-size:13.5px;
+  }
+  .gbook{ margin-top:14px; display:flex; flex-direction:column; gap:6px; }
+  .gitem{ font-size:12.5px; color:#c9e6dc; background:rgba(0,0,0,.25); border:1px solid rgba(0,255,170,.1); border-radius:10px; padding:9px 13px; display:flex; gap:10px; }
+  .gitem .gt{ color:#5c6f7d; font-size:11px; flex:none; }
+  .kbd-hint{ text-align:center; font-size:11px; color:#5c6f7d; margin-top:22px; }
+  .kbd-hint b{ border:1px solid rgba(255,255,255,.2); border-radius:5px; padding:1px 7px; color:#8aa3b0; font-weight:600; }
 </style>
 </head>
 <body>
@@ -98,11 +118,60 @@
       <div class="go">전시실 입장 →</div>
     </a>
   </div>
+
+  <section class="guest">
+    <h3>📖 관람객 방명록</h3>
+    <div class="gs">이 브라우저에만 저장됩니다 (localStorage) — 서버로 전송되지 않아요</div>
+    <div class="row">
+      <input id="gname" maxlength="16" placeholder="이름 (선택)" />
+      <input id="gmsg" maxlength="80" placeholder="한 마디 남겨주세요" />
+      <button onclick="signGuest()">남기기</button>
+    </div>
+    <div class="gbook" id="gbook"></div>
+  </section>
+
+  <div class="kbd-hint">⌨ 키보드 관람: <b>1</b> 포털 시대 · <b>2</b> 채팅 앱 시대 · <b>3</b> 오로라 시대</div>
 </div>
 
 <footer>
   ⓒ ZeliAI (YEJIN Co., Ltd.) — design-history archive · 각 전시물은 재현본이며 실서비스와 다를 수 있습니다<br>
   실서비스: zeliai.com
 </footer>
+
+<script>
+  // ── 방명록 (localStorage 전용 — 서버 전송 없음) ──
+  function loadGuest(){
+    var book=document.getElementById('gbook'); book.innerHTML='';
+    var items=[];
+    try{ items=JSON.parse(localStorage.getItem('zeliai_museum_guestbook')||'[]'); }catch(e){}
+    items.slice(-8).reverse().forEach(function(g){
+      var d=document.createElement('div'); d.className='gitem';
+      var t=document.createElement('span'); t.className='gt'; t.textContent=g.t;
+      var m=document.createElement('span'); m.textContent=(g.n?g.n+' — ':'')+g.m;
+      d.appendChild(t); d.appendChild(m); book.appendChild(d);
+    });
+  }
+  function signGuest(){
+    var n=document.getElementById('gname').value.trim();
+    var m=document.getElementById('gmsg').value.trim();
+    if(!m){ document.getElementById('gmsg').focus(); return; }
+    var items=[];
+    try{ items=JSON.parse(localStorage.getItem('zeliai_museum_guestbook')||'[]'); }catch(e){}
+    var now=new Date();
+    items.push({ n:n, m:m, t:(now.getMonth()+1)+'/'+now.getDate() });
+    try{ localStorage.setItem('zeliai_museum_guestbook', JSON.stringify(items.slice(-50))); }catch(e){}
+    document.getElementById('gmsg').value='';
+    loadGuest();
+  }
+  document.getElementById('gmsg').addEventListener('keydown',function(e){ if(e.key==='Enter') signGuest(); });
+  loadGuest();
+  // ── 키보드 관람 ──
+  window.addEventListener('keydown',function(e){
+    if(e.target.tagName==='INPUT') return;
+    if(e.key==='1') location.href='exhibits/gen1-portal.html';
+    if(e.key==='2') location.href='exhibits/gen2-chat.html';
+    if(e.key==='3') location.href='exhibits/gen3-aurora.html';
+  });
+</script>
 </body>
 </html>

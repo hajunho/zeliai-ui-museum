@@ -99,6 +99,53 @@
   .step p b{ color:#e8f6f2; }
   .when{ margin-top:13px; font-size:12.5px; color:#c9e0e8; line-height:1.75; border-top:1px dashed rgba(255,255,255,.1); padding-top:12px; }
   .when b{ color:#00e5ff; }
+
+  /* ── 데모: 6패널 동시 응답 ── */
+  .panels{ display:none; grid-template-columns:repeat(3,1fr); gap:12px; width:100%; max-width:860px; margin-top:24px; }
+  .panels.on{ display:grid; animation:fade .3s ease; }
+  @media (max-width:760px){ .panels{ grid-template-columns:1fr; } }
+  .mp{ background:rgba(255,255,255,.045); border:1px solid rgba(0,255,170,.14); border-radius:15px; padding:13px; transition:border-color .3s; }
+  .mp .mh{ display:flex; gap:8px; align-items:center; margin-bottom:8px; font-size:12.5px; font-weight:700; }
+  .mp .mh small{ font-weight:400; color:#5c6f7d; font-size:10px; }
+  .mp .mh .rt{ margin-left:auto; font-size:10px; color:#5c6f7d; font-weight:400; }
+  .mp .bd{ font-size:11.5px; line-height:1.7; color:#c4d6dd; min-height:76px; }
+  .verdict{
+    display:none; width:100%; max-width:860px; margin-top:14px; border-radius:16px; padding:16px 20px;
+    background:linear-gradient(135deg,rgba(0,255,136,.1),rgba(0,191,255,.1)); border:1px solid rgba(0,229,255,.28);
+    animation:fade .35s ease;
+  }
+  .verdict h5{ font-size:13.5px; color:#00ff88; margin-bottom:7px; }
+  .verdict p{ font-size:12.5px; color:#d7ece3; line-height:1.75; }
+  .verdict .chips{ display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+  .verdict .chips span{ font-size:10.5px; padding:4px 11px; border-radius:999px; background:rgba(0,0,0,.3); border:1px solid rgba(0,255,170,.14); color:#8aa3b0; }
+  .verdict .chips b{ color:#00e5ff; }
+
+  /* ── 데모: 오토브레인 배정 ── */
+  .autoflow{ display:none; width:100%; max-width:720px; margin-top:20px; }
+  .autoflow.on{ display:block; }
+  .astep{
+    background:rgba(255,255,255,.045); border:1px solid rgba(0,255,170,.14); border-radius:14px; padding:13px 16px;
+    margin-bottom:10px; opacity:0; transform:translateY(8px); transition:all .4s; font-size:12.5px; color:#c9e6dc; line-height:1.7;
+  }
+  .astep.vis{ opacity:1; transform:none; }
+  .astep h6{ font-size:11px; color:#8aa3b0; margin-bottom:6px; }
+  .astep b{ color:#00ff88; }
+  .astep .tagrow{ display:flex; gap:6px; flex-wrap:wrap; }
+  .astep .tagrow span{ font-size:11px; padding:3px 11px; border-radius:999px; background:rgba(0,0,0,.3); border:1px solid rgba(0,255,170,.14); }
+  .astep .tagrow span.hit{ border-color:#00ff88; color:#00ff88; font-weight:700; }
+
+  /* ── 데모: 검색 오버레이 ── */
+  .smodal{ display:none; position:fixed; inset:0; background:rgba(2,4,8,.7); z-index:90; align-items:center; justify-content:center; padding:20px; backdrop-filter:blur(5px); }
+  .smodal.on{ display:flex; }
+  .sbox{ background:#0a121f; border:1px solid rgba(0,229,255,.28); border-radius:20px; width:min(560px,94vw); max-height:84vh; overflow:auto; padding:24px 26px; }
+  .sbox h3{ font-size:16px; margin-bottom:4px; }
+  .sbox .ms{ font-size:11.5px; color:#5c6f7d; margin-bottom:14px; }
+  .sbox .ai{ border:1px solid rgba(0,255,136,.3); background:rgba(0,255,136,.05); border-radius:13px; padding:13px 15px; font-size:12.5px; line-height:1.75; color:#d7ece3; margin-bottom:12px; }
+  .sbox .ai b{ color:#00ff88; }
+  .sbox .wi{ padding:9px 2px; border-bottom:1px dashed rgba(255,255,255,.08); }
+  .sbox .wi h6{ font-size:13px; color:#9fd8ff; font-weight:600; }
+  .sbox .wi p{ font-size:11.5px; color:#8aa3b0; margin-top:2px; }
+  .sclose{ margin-top:14px; width:100%; padding:11px; border:none; border-radius:12px; background:linear-gradient(90deg,#00ff88,#00e5ff); color:#00281a; font-weight:800; cursor:pointer; font-family:inherit; font-size:13.5px; }
   footer{ position:relative; z-index:5; margin-top:auto; padding:22px 24px; text-align:center; font-size:11.5px; color:#5c6f7d; line-height:1.9; }
 </style>
 </head>
@@ -154,14 +201,41 @@
   <div class="hint" id="hint"><b>통합검색 모드</b> — 웹·뉴스·AI 요약을 한 번에. 모델 선택이 필요 없습니다</div>
 
   <div class="box">
-    <textarea rows="2" placeholder="검색어나 질문을 입력하세요"></textarea>
+    <textarea id="q" rows="2" placeholder="검색어나 질문을 입력하세요">2026 반도체 시장, 하반기에 투자해도 될까?</textarea>
     <div class="brow">
-      <button class="send" id="send" onclick="alert('전시물입니다 — 실행은 동작하지 않아요 🙂')">🔍 통합검색</button>
+      <button class="send" id="send">🔍 통합검색</button>
     </div>
   </div>
 
   <div class="patent" id="patent">
     🏅 <span>본 심층·심화 분석은 <b>등록특허 기술</b>로 제공됩니다 <span class="mute">(전시용 표기 — 상세 번호는 실서비스에서)</span></span>
+  </div>
+
+  <!-- 데모: 오토브레인 배정 -->
+  <div class="autoflow" id="autoflow">
+    <div class="astep" id="as1"><h6>1단계 — 질문 분석 (0.2초)</h6>
+      <div class="tagrow"><span class="hit">유형: <b>투자·시장 전망</b></span><span>시의성 높음</span><span>수치 검증 필요</span></div></div>
+    <div class="astep" id="as2"><h6>2단계 — 이번 주 스코어보드 기준 최적 모델 배정</h6>
+      <b>Perplexity 배정</b> <span style="color:#5c6f7d;">(최신 자동)</span> — 실시간 검색 정확도 1위 · 출처 제공 · (전시용 근거)</div>
+    <div class="astep" id="as3"><h6>3단계 — 안전장치</h6>
+      중요 답변은 <b>2순위 모델이 자동 재검증</b>합니다. 결과가 갈리면 멀티브레인 전체 실행을 제안 — 여기서 심층 분석으로 이어졌습니다.</div>
+  </div>
+
+  <!-- 데모: 6패널 동시 응답 -->
+  <div class="panels" id="panels">
+    <div class="mp" data-b="gpt"><div class="mh"><span style="color:#34d399">●</span>GPT <small>최신</small><span class="rt"></span></div><div class="bd"></div></div>
+    <div class="mp" data-b="claude"><div class="mh"><span style="color:#fbbf24">●</span>Claude <small>최신</small><span class="rt"></span></div><div class="bd"></div></div>
+    <div class="mp" data-b="gemini"><div class="mh"><span style="color:#60a5fa">●</span>Gemini <small>최신</small><span class="rt"></span></div><div class="bd"></div></div>
+    <div class="mp" data-b="llama"><div class="mh"><span style="color:#c084fc">●</span>Llama <small>최신</small><span class="rt"></span></div><div class="bd"></div></div>
+    <div class="mp" data-b="mistral"><div class="mh"><span style="color:#fb923c">●</span>Mistral <small>최신</small><span class="rt"></span></div><div class="bd"></div></div>
+    <div class="mp" data-b="pplx"><div class="mh"><span style="color:#2dd4bf">●</span>Perplexity <small>최신</small><span class="rt"></span></div><div class="bd"></div></div>
+  </div>
+  <div class="verdict" id="verdict">
+    <h5>⚖ 교차검증 통합결과 — 6개 답변을 하나로</h5>
+    <p><b style="color:#00ff88;">공통 결론:</b> (전시용) 수요는 견조하나 밸류에이션 부담이 있어 분할 매수가 합리적.
+    <b style="color:#fbbf24;">의견 갈림:</b> 메모리 비중 — 4:2.
+    <b style="color:#fb7185;">환각 제거:</b> 근거 없는 수치 인용 1건을 걸러냈습니다.</p>
+    <div class="chips"><span>합의도 <b>82%</b></span><span>환각 <b>1건 제거</b></span><span>응답 <b>6/6</b> · 실시간 동시</span><span>🏅 등록특허 기술</span></div>
   </div>
 
   <section class="how">
@@ -175,15 +249,33 @@
   </section>
 </main>
 
+<!-- 데모: 통합검색 오버레이 -->
+<div class="smodal" id="smodal">
+  <div class="sbox">
+    <h3>🔍 통합검색 결과 <span style="font-size:11px;color:#5c6f7d;">(전시용 가짜 결과)</span></h3>
+    <div class="ms" id="sq">검색어: —</div>
+    <div class="ai"><b>AI 요약 · 교차검증</b> — (전시용) 검색 결과 상단에는 두 모델이 교차검증한 AI 요약이 먼저 나오고, 아래에 웹·뉴스 결과가 이어졌습니다.</div>
+    <div class="wi"><h6>전시용 웹 문서 1 — 개요</h6><p>실제 데이터나 API 호출 없이 생김새만 재현했습니다.</p></div>
+    <div class="wi"><h6>전시용 웹 문서 2 — 심화</h6><p>실서비스에서는 관련 질문 칩이 멀티브레인으로 이어졌습니다.</p></div>
+    <button class="sclose" onclick="document.getElementById('smodal').classList.remove('on')">닫기</button>
+  </div>
+</div>
+
 <footer>ⓒ ZeliAI — UI Museum 전시용 정적 껍데기</footer>
 
 <script>
-  var mode="search";
+  var mode="search", running=false;
   var cfg={
     search:{hint:'<b>통합검색 모드</b> — 웹·뉴스·AI 요약을 한 번에. 모델 선택이 필요 없습니다', btn:'🔍 통합검색', dim:true},
     auto:{hint:'<b>오토브레인 모드</b> — 질문을 분석해 최적의 AI(브랜드+버전)를 자동 배정합니다', btn:'✨ 자동 배정 실행', dim:true},
     multi:{hint:'<b>멀티브레인 심층·심화 모드</b> — 최신 AI 최대 6개가 실시간 동시에 답하고 교차검증합니다', btn:'⚡ 심층 분석 실행 (동시 6개)', dim:false}
   };
+  function resetDemos(){
+    document.getElementById('panels').classList.remove('on');
+    document.getElementById('verdict').style.display='none';
+    document.getElementById('autoflow').classList.remove('on');
+    ['as1','as2','as3'].forEach(function(id){ document.getElementById(id).classList.remove('vis'); });
+  }
   document.querySelectorAll('.mode').forEach(function(m){
     m.addEventListener('click', function(){
       mode=m.dataset.m;
@@ -192,6 +284,7 @@
       document.getElementById('send').textContent=cfg[mode].btn;
       document.getElementById('belt').classList.toggle('dim', cfg[mode].dim);
       document.getElementById('patent').style.display = mode==='multi' ? 'flex' : 'none';
+      resetDemos();
     });
   });
   document.querySelectorAll('.brain:not(.soon)').forEach(function(b){
@@ -204,6 +297,59 @@
       b.classList.toggle('on');
     });
   });
+
+  // ── 실행 데모 ──
+  var ANS={
+    gpt:'(전시용) AI 데이터센터 투자 확대가 최대 동력입니다. 조정 시 분할 매수가 합리적입니다.',
+    claude:'(전시용) 수요는 견조하나 밸류에이션 부담. 메모리는 중립 — 분할 매수·분산 권고.',
+    gemini:'(전시용) AI 서버·HBM 수요 지속 전망. 환율·금리 변수 모니터링 필요.',
+    llama:'(전시용) 클라우드 3사 설비투자 가이던스 상향. 단기 급등 종목은 변동성 관리.',
+    mistral:'(전시용) 밸류에이션·규제 변수 부담. 중립 — 장비·소재 분산 권고.',
+    pplx:'(전시용) 최신 리포트 12건 중 9건 비중 확대. 공통 근거는 AI 서버 수요.'
+  };
+  document.getElementById('send').addEventListener('click', function(){
+    var q=document.getElementById('q').value.trim()||'젤리아이';
+    if(mode==='search'){
+      document.getElementById('sq').textContent='검색어: '+q;
+      document.getElementById('smodal').classList.add('on');
+      return;
+    }
+    if(mode==='auto'){
+      resetDemos();
+      document.getElementById('autoflow').classList.add('on');
+      setTimeout(function(){ document.getElementById('as1').classList.add('vis'); },100);
+      setTimeout(function(){ document.getElementById('as2').classList.add('vis'); },700);
+      setTimeout(function(){ document.getElementById('as3').classList.add('vis'); },1300);
+      return;
+    }
+    // 멀티브레인: 6패널 동시 스트리밍 → 통합결과
+    if(running) return; running=true;
+    resetDemos();
+    var panels=document.querySelectorAll('#panels .mp');
+    document.getElementById('panels').classList.add('on');
+    var done=0;
+    panels.forEach(function(p,idx){
+      var bd=p.querySelector('.bd'), rt=p.querySelector('.rt');
+      var text=ANS[p.dataset.b]; bd.textContent='';
+      var i=0, t0=performance.now();
+      var timer=setInterval(function(){
+        bd.textContent=text.slice(0, i+=2);
+        rt.textContent=((performance.now()-t0)/1000).toFixed(1)+'s';
+        if(i>=text.length){
+          clearInterval(timer);
+          p.style.borderColor='rgba(0,255,170,.45)';
+          if(++done===6){
+            setTimeout(function(){
+              document.getElementById('verdict').style.display='block';
+              document.getElementById('verdict').scrollIntoView({behavior:'smooth', block:'nearest'});
+              running=false;
+            },400);
+          }
+        }
+      }, 11+idx*4);
+    });
+  });
+  document.getElementById('smodal').addEventListener('click',function(e){ if(e.target===this) this.classList.remove('on'); });
 </script>
 </body>
 </html>
